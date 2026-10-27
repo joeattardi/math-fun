@@ -9,7 +9,9 @@ export class BootScene extends Phaser.Scene {
   create(): void {
     generateSharedTextures(this);
     // Tell the boot guard in index.html the game is up; later errors only get recorded.
-    (window as unknown as { __mathFunBooted?: boolean }).__mathFunBooted = true;
+    const w = window as unknown as { __mathFunBooted?: boolean; __mathFunBootDone?: () => void };
+    if (w.__mathFunBootDone) w.__mathFunBootDone();
+    else w.__mathFunBooted = true;
     this.scene.start('TapToStart');
   }
 }

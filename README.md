@@ -18,16 +18,18 @@ npm run dev       # dev server at http://localhost:5173/math-fun/
 npm test          # unit tests (question generation, adaptivity, progress, vocabulary)
 npm run build     # typecheck + production build into dist/
 npm run preview   # serve the production build
+npm run ipad      # build + serve on your LAN for testing on the iPad
 npm run lint
 ```
 
 ## Test on the iPad over your LAN
 
-1. Run `npm run dev` on a computer on the same Wi-Fi as the iPad. Vite prints a `Network:` URL such as `http://192.168.1.20:5173/math-fun/`.
-2. Open that URL in Safari on the iPad, in landscape.
+1. Run `npm run ipad` on a computer on the same Wi-Fi as the iPad. It builds the game and serves the small production version, then prints a `Network:` URL such as `http://10.0.0.101:4173/math-fun/`.
+2. Open that URL, including `/math-fun/`, in Safari on the iPad, in landscape.
 3. Tap **Tap to Play** to turn on sound and voices. iOS blocks audio until the first tap.
+4. After changing code, stop it and run `npm run ipad` again.
 
-The dev server doesn't register the service worker, so you can't "install" it this way. Use the deployed site for that.
+`npm run dev` also works on the iPad, but it sends about 26 MB of unminified code, so it can take a long time to start over Wi-Fi ("Still loading…"). Use it on the computer, and `npm run ipad` for the iPad.
 
 ## Install on the iPad
 

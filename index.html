@@ -74,7 +74,20 @@
         -webkit-user-select: text;
         user-select: text;
       }
-      #oops[hidden] { display: none; }
+      #oops[hidden], #loading[hidden] { display: none; }
+      #loading {
+        position: fixed;
+        inset: 0;
+        z-index: 15;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font: bold 44px "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
+        text-shadow: 0 4px 0 #22223b;
+        animation: bob 1s ease-in-out infinite alternate;
+      }
+      @keyframes bob { to { transform: translateY(-14px); } }
       #oops-retry {
         font: bold 40px "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
         color: #fff;
@@ -109,6 +122,7 @@
       <div class="tablet"></div>
       <div>Turn me sideways!</div>
     </div>
+    <div id="loading" hidden>Still loading&hellip;</div>
     <div id="oops" hidden>
       <button id="oops-retry" type="button">Oops! Tap to try again</button>
       <p class="grownups">For grown-ups: the game didn't start. If this keeps happening, send this message:</p>
@@ -138,9 +152,16 @@
           var r = e.reason;
           record('Unhandled: ' + ((r && (r.stack || r.message)) || r));
         });
+        // Slow is not broken (the dev server sends ~26 MB): show a gentle "Still loading"
+        // that disappears when the game boots. Only real errors show the #oops screen.
+        var loading = document.getElementById('loading');
         setTimeout(function () {
-          if (!window.__mathFunBooted) record('The game did not start within 15 seconds.');
-        }, 15000);
+          if (!window.__mathFunBooted && box.hidden) loading.hidden = false;
+        }, 4000);
+        window.__mathFunBootDone = function () {
+          window.__mathFunBooted = true;
+          loading.hidden = true;
+        };
         // Clear the offline copy (in case it's stale) and reload.
         document.getElementById('oops-retry').addEventListener('click', function () {
           var jobs = [];
