@@ -18,6 +18,8 @@ export class ParentStatsScene extends Phaser.Scene {
     this.add.text(566, 50, 'Grown-up Stats', textStyle(fontSize.heading - 8)).setOrigin(0.5);
 
     const lines = games.flatMap((g) => [`${g.title}`, ...(g.parentStats?.() ?? ['(no stats yet)']), '']);
+    const errors = (window as unknown as { __mathFunErrors?: string[] }).__mathFunErrors ?? [];
+    if (errors.length) lines.push(`Errors this session (${errors.length}):`, ...errors.slice(-3).map((e) => `  ${e.split('\n')[0].slice(0, 90)}`));
     this.add.text(130, 120, lines.join('\n'), {
       fontFamily: FONT_FAMILY,
       fontSize: `${fontSize.small}px`,

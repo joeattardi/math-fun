@@ -58,6 +58,46 @@
         0%, 20% { transform: rotate(0deg); }
         60%, 100% { transform: rotate(-90deg); }
       }
+      #oops {
+        position: fixed;
+        inset: 0;
+        z-index: 20;
+        background: #2ec4f1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        padding: 24px;
+        box-sizing: border-box;
+        font-family: "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
+        -webkit-user-select: text;
+        user-select: text;
+      }
+      #oops[hidden] { display: none; }
+      #oops-retry {
+        font: bold 40px "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
+        color: #fff;
+        background: #ff5d8f;
+        border: 6px solid #22223b;
+        border-radius: 28px;
+        padding: 22px 40px;
+        box-shadow: 0 8px 0 #22223b;
+      }
+      #oops .grownups { margin: 8px 0 0; color: #22223b; font-size: 22px; text-align: center; }
+      #oops-detail {
+        max-width: 90vw;
+        max-height: 30vh;
+        overflow: auto;
+        margin: 0;
+        padding: 12px 16px;
+        background: rgba(255, 255, 255, 0.85);
+        border-radius: 12px;
+        color: #22223b;
+        font: 15px ui-monospace, Menlo, monospace;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
       @media (orientation: portrait) {
         #rotate { display: flex; }
       }
@@ -69,6 +109,55 @@
       <div class="tablet"></div>
       <div>Turn me sideways!</div>
     </div>
+    <div id="oops" hidden>
+      <button id="oops-retry" type="button">Oops! Tap to try again</button>
+      <p class="grownups">For grown-ups: the game didn't start. If this keeps happening, send this message:</p>
+      <pre id="oops-detail"></pre>
+    </div>
+    <script>
+      // Boot guard: runs before the game, so it also catches a game script that fails to load.
+      // Before the game boots, any error shows the #oops screen instead of a blank page.
+      // After boot, errors are only recorded (window.__mathFunErrors) for the grown-up stats screen.
+      (function () {
+        var errors = (window.__mathFunErrors = []);
+        var box = document.getElementById('oops');
+        var detail = document.getElementById('oops-detail');
+        function record(msg) {
+          errors.push(String(msg).slice(0, 500));
+          if (window.__mathFunBooted) return;
+          detail.textContent = errors.join('\n') + '\n\n' + navigator.userAgent;
+          box.hidden = false;
+        }
+        window.addEventListener('error', function (e) {
+          var t = e.target;
+          if (t && t !== window && (t.src || t.href)) return record('Could not load ' + (t.src || t.href));
+          var where = e.filename ? ' (' + e.filename.split('/').pop() + ':' + e.lineno + ':' + e.colno + ')' : '';
+          record((e.message || 'Unknown error') + where + (e.error && e.error.stack ? '\n' + e.error.stack : ''));
+        }, true);
+        window.addEventListener('unhandledrejection', function (e) {
+          var r = e.reason;
+          record('Unhandled: ' + ((r && (r.stack || r.message)) || r));
+        });
+        setTimeout(function () {
+          if (!window.__mathFunBooted) record('The game did not start within 15 seconds.');
+        }, 15000);
+        // Clear the offline copy (in case it's stale) and reload.
+        document.getElementById('oops-retry').addEventListener('click', function () {
+          var jobs = [];
+          if (navigator.serviceWorker) {
+            jobs.push(navigator.serviceWorker.getRegistrations().then(function (regs) {
+              return Promise.all(regs.map(function (r) { return r.unregister(); }));
+            }));
+          }
+          if (window.caches) {
+            jobs.push(caches.keys().then(function (keys) {
+              return Promise.all(keys.map(function (k) { return caches.delete(k); }));
+            }));
+          }
+          Promise.all(jobs).catch(function () {}).then(function () { location.reload(); });
+        });
+      })();
+    </script>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
