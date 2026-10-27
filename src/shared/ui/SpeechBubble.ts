@@ -49,14 +49,15 @@ export class SpeechBubble extends Phaser.GameObjects.Container {
     const style = { fontFamily: FONT_FAMILY, fontSize: `${fontSize.prompt}px`, fontStyle: 'bold', color: colors.inkCss };
     let total = 0;
     for (const part of parts) {
-      const t = this.scene.add.text(0, 0, part.text, { ...style, color: part.color ?? colors.inkCss }).setOrigin(0, 0.5);
+      const t = this.scene.add.text(0, 0, part.text, { ...style, color: part.color ?? colors.inkCss }).setOrigin(0.5, 0.5);
       if (part.color) t.setStroke(colors.inkCss, 5);
       this.segments.push(t);
       total += t.width;
     }
     let x = -total / 2;
+    // Centered origins so the highlighted word pulses in place without bumping its neighbors.
     for (const t of this.segments) {
-      t.x = x;
+      t.x = x + t.width / 2;
       x += t.width;
     }
     this.add(this.segments);
@@ -64,7 +65,7 @@ export class SpeechBubble extends Phaser.GameObjects.Container {
     this.layoutBubble(total, h, speakerX, speakerY);
     // Make the highlighted word pulse.
     this.segments.filter((_, i) => parts[i].color).forEach((t) => {
-      this.scene.tweens.add({ targets: t, scale: { from: 1, to: 1.1 }, duration: 420, yoyo: true, repeat: 2, ease: 'Sine.inOut' });
+      this.scene.tweens.add({ targets: t, scale: { from: 1, to: 1.06 }, duration: 420, yoyo: true, repeat: 2, ease: 'Sine.inOut' });
     });
   }
 

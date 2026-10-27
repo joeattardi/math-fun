@@ -3,11 +3,8 @@
  * {term} the asked term in caps (GREATER / LESS), {other} the opposite term,
  * {n} a number, {greater} and {less} the pair, {streak} the streak count.
  */
+/** Questions are not here: they are always the plain sentence from round.ts `questionText`. */
 export interface CharacterLines {
-  /** First question of a round. Must contain {term}. */
-  ask: readonly string[];
-  /** Second question, after the first was answered. Must contain {term}. */
-  askSecond: readonly string[];
   correct: readonly string[];
   /** Silly reaction to a wrong tap. The joke is always on the character. */
   wrong: readonly string[];

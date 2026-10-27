@@ -43,7 +43,7 @@ export const fontSize = {
   cardOnes: 146,
   title: 84,
   heading: 56,
-  prompt: 44,
+  prompt: 40,
   button: 36,
   body: 28,
   small: 22,

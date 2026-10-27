@@ -37,7 +37,7 @@ import {
   LEVELS, type LevelDef, type Pair, ROUNDS_PER_LEVEL, generatePair, greaterOf, lessOf,
 } from './questions';
 import {
-  type Ask, type RoundState, answer, askNumbers, createRound, currentAsk, markHint, summarySentences, targetFor, wasFirstTry,
+  type Ask, type RoundState, answer, createRound, currentAsk, markHint, questionText, summarySentences, targetFor, wasFirstTry,
 } from './round';
 import { starsFor } from './stars';
 import { uiText } from './ui-text';
@@ -206,7 +206,7 @@ export class GameScene extends Phaser.Scene {
     await this.live(this.cardsIn(pair));
     const roll = this.rng();
     this.asker = roll < 0.45 ? this.chomp : roll < 0.9 ? this.waddles : this.hops;
-    this.ask('first');
+    this.ask();
   }
 
   private cardsIn(pair: Pair): Promise<void> {
@@ -229,19 +229,17 @@ export class GameScene extends Phaser.Scene {
     return ask === 'greater' ? 'GREATER' : 'LESS';
   }
 
-  private ask(kind: 'first' | 'second' | 'retry'): void {
+  /** Ask the current question: always exactly "Which number is greater? 28 or 51?", no extra chatter. */
+  private ask(): void {
     const ask = currentAsk(this.round!);
     if (!ask) return;
-    const term = this.termOf(ask);
-    const other = this.termOf(ask === 'greater' ? 'less' : 'greater');
-    const line = this.pickLine(this.asker, kind === 'first' ? 'ask' : 'askSecond', { term, other });
-    // Read both numbers aloud, left card first, so he hears them as well as sees them.
     const { a, b } = this.round!.pair;
-    const text = `${line} ${askNumbers(a, b)}`;
     const color = ask === 'greater' ? colors.greaterCss : colors.lessCss;
     this.accepting = true;
     this.showMe.setEnabled(true);
-    void this.asker.say(this.bubble, text, { prompt: [{ text: 'Which is ' }, { text: term, color }, { text: '?' }] });
+    void this.asker.say(this.bubble, questionText(ask, a, b), {
+      prompt: [{ text: uiText.askPrefix }, { text: this.termOf(ask), color }, { text: '?' }],
+    });
   }
 
   private onCardTap(card: NumberCard, p: Phaser.Input.Pointer): void {
@@ -271,7 +269,7 @@ export class GameScene extends Phaser.Scene {
     if (!roundDone) {
       const bank = recovered ? recoveryPraise : PRAISE_ROTATION[this.praiseTurn++ % PRAISE_ROTATION.length];
       await this.live(this.asker.say(this.bubble, this.picker.pick(recovered ? 'recovery' : `praise${this.praiseTurn % 3}`, bank)));
-      this.ask('second');
+      this.ask();
       return;
     }
     await this.finishRound();
@@ -291,7 +289,7 @@ export class GameScene extends Phaser.Scene {
     else void reactor.react('confused');
     await this.live(reactor.say(this.bubble, this.pickLine(reactor, 'wrong', { term, other, n: card.value })));
     await this.playHint();
-    this.ask('retry');
+    this.ask();
   }
 
   private async onShowMe(): Promise<void> {
@@ -299,7 +297,7 @@ export class GameScene extends Phaser.Scene {
     this.accepting = false;
     speech.cancel();
     await this.playHint();
-    this.ask('retry');
+    this.ask();
   }
 
   /** The number line hint: Hops hops from 0 to each number, then explain with left and right: the number on the right is greater. */

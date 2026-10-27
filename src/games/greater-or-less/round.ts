@@ -62,7 +62,7 @@ export function summarySentences(pair: Pair): [string, string] {
   return [`${g} is greater than ${l}!`, `${l} is less than ${g}!`];
 }
 
-/** The spoken tail of every question, e.g. "28 or 51?" (left card, then right card). */
-export function askNumbers(a: number, b: number): string {
-  return `${a} or ${b}?`;
+/** The whole spoken question, nothing more: "Which number is greater? 28 or 51?" (left card, then right card). */
+export function questionText(ask: Ask, a: number, b: number): string {
+  return `Which number is ${ask}? ${a} or ${b}?`;
 }

@@ -37,9 +37,6 @@ describe('vocabulary', () => {
           expect(new Set(lines).size).toBe(lines.length);
         });
       }
-      it('every question names the term', () => {
-        for (const line of [...bank.ask, ...bank.askSecond]) expect(line).toContain('{term}');
-      });
       it('only uses known placeholders', () => {
         const all = Object.values(bank).flat() as string[];
         for (const line of all) {

@@ -4,7 +4,7 @@ export const uiText = {
   showMe: 'Show me!',
   lineLeft: 'LEFT',
   lineRight: 'RIGHT',
-  ask: (term: 'GREATER' | 'LESS') => `Which is ${term}?`,
+  askPrefix: 'Which number is ',
   levelLabel: (n: number) => `Level ${n}`,
   roundLabel: (n: number, total: number) => `${n} / ${total}`,
   levelDone: 'Level Complete!',
