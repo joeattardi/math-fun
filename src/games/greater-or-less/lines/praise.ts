@@ -4,17 +4,17 @@ export const strategyPraise: readonly string[] = [
   'You checked the tens first, genius!',
   'You looked at the tens! That is the secret!',
   'You pictured the number line! Smart!',
-  'You thought about how far along it is. Brilliant!',
+  'You thought about which one is farther right. Brilliant!',
   'You compared the tens like a pro!',
   'Tens first! That is exactly how mathematicians do it!',
   'You used your number line brain!',
-  'You knew which one goes farther. Wow!',
+  'You knew which one sits to the right. Wow!',
   'You looked carefully before tapping. Super smart!',
   'You did not get tricked by the ones! Amazing!',
   'You compared them like a scientist!',
   'Big brain move! You checked the tens!',
   'You thought it through! That is real math!',
-  'You saw which one is farther along. Excellent!',
+  'You saw which one is farther to the right. Excellent!',
   'You know your tens! Fantastic!',
   'That is some top-notch number thinking!',
 ];
@@ -93,14 +93,17 @@ export const bestScorePraise: readonly string[] = [
   'You got even better than last time!',
 ];
 
-/** The hint's closing line, after both numbers are on the line. */
+/**
+ * The hint's closing line, after both numbers are on the line.
+ * Always explains position with left and right: the number on the right is greater.
+ */
 export const hintConclusion: readonly string[] = [
-  'Look how far {greater} is! Farther along means greater!',
-  '{greater} is farther along, so {greater} is greater!',
-  'See? {less} is closer to zero. {less} is less!',
-  '{greater} went farther! {greater} is greater than {less}!',
-  'Farther along means greater. {greater} wins the race!',
-  '{less} did not go as far, so {less} is less than {greater}!',
-  'Look! {greater} is way out there. That means greater!',
-  'Closer to zero is less. Farther along is greater!',
+  '{greater} is to the right of {less}. Farther right means greater!',
+  '{less} is on the left, and {greater} is on the right. So {greater} is greater!',
+  'Look! {greater} is farther to the right, so {greater} is greater than {less}!',
+  '{less} is to the left of {greater}, so {less} is less than {greater}!',
+  'Left means less, right means greater. {greater} is greater than {less}!',
+  '{greater} is way over on the right. That means {greater} is greater!',
+  'See? {less} is on the left side. {less} is less than {greater}!',
+  'The farther right a number is, the greater it is. {greater} wins!',
 ];

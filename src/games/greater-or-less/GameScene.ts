@@ -299,7 +299,7 @@ export class GameScene extends Phaser.Scene {
     this.ask('retry');
   }
 
-  /** The number line hint: Hops hops from 0 to each number, then we point out which is farther along. */
+  /** The number line hint: Hops hops from 0 to each number, then explain with left and right: the number on the right is greater. */
   private async playHint(): Promise<void> {
     const round = this.round!;
     this.hintPlaying = true;

@@ -49,7 +49,15 @@ describe('vocabulary', () => {
     });
   }
 
-  it('hint conclusions use greater or less', () => {
-    for (const line of hintConclusion) expect(line).toMatch(/greater|less/);
+  it('hint conclusions use greater or less, and left or right', () => {
+    for (const line of hintConclusion) {
+      expect(line).toMatch(/greater|less/);
+      expect(line).toMatch(/\b(left|right)\b/i);
+    }
+  });
+
+  it('number line hints describe position with left and right, not "farther along"', () => {
+    const hintLines = [...chompLines.hint, ...waddlesLines.hint, ...hopsLines.hint, ...hintConclusion];
+    for (const line of hintLines) expect(line).not.toMatch(/farther along|how far|goes farther|closer to zero/i);
   });
 });

@@ -11,6 +11,7 @@ Each game targets one specific math skill the child is struggling with. Fun is t
 - **Praise often and specifically.** "You checked the tens first, genius!" beats "Good job." Vary praise so it doesn't get stale.
 - **Humor is a feature.** Characters say silly things, make goofy faces, and occasionally break the fourth wall. Keep jokes kid-appropriate and kind (never mocking the player).
 - **Use correct math vocabulary.** Say what his teacher says: "greater than," "less than," "equal to," and so on. For comparing numbers, never use "bigger," "smaller," or "larger" in prompts, hints, or praise. Each game's spec lists its required terms.
+- **On a number line, describe position with "left" and "right"** (numbers to the right are greater, numbers to the left are less), not "farther along" or "how far."
 - **Visual scaffolding over explanation.** Show the concept (number line, tens groups, hops) rather than telling.
 - **Short sessions.** A round is a few seconds; a "level" is ~10 rounds. Celebrate at the end of each level.
 - **Adaptive, not linear.** Track which question types he misses and serve more of those, mixed with easy wins to keep confidence up.
