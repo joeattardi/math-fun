@@ -130,7 +130,7 @@ export class GameScene extends Phaser.Scene {
       music.setHype(0);
     });
 
-    this.line = new NumberLine(this, { max: this.level.max, ...layout.numberLine });
+    this.line = new NumberLine(this, { max: this.level.max, ...layout.numberLine, endLabels: [uiText.lineLeft, uiText.lineRight] });
     this.chomp = new Chomp(this, layout.chomp.x, layout.chomp.y);
     this.waddles = new Waddles(this, layout.waddles.x, layout.waddles.y);
     this.hops = new Hops(this, this.line.xFor(0), this.line.groundY);

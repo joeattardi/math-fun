@@ -2,6 +2,8 @@
 export const uiText = {
   title: 'Greater or Less?',
   showMe: 'Show me!',
+  lineLeft: 'LEFT',
+  lineRight: 'RIGHT',
   ask: (term: 'GREATER' | 'LESS') => `Which is ${term}?`,
   levelLabel: (n: number) => `Level ${n}`,
   roundLabel: (n: number, total: number) => `${n} / ${total}`,

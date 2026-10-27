@@ -13,6 +13,8 @@ export interface NumberLineOptions {
   tickEvery?: number;
   /** Label every number up to this range; above it, only tens get labels. */
   labelAllUpTo?: number;
+  /** Words under the two ends of the line, e.g. ['LEFT', 'RIGHT']. */
+  endLabels?: [string, string];
 }
 
 interface Marker {
@@ -24,6 +26,7 @@ interface Marker {
 const MARKER_HEIGHTS = [38, 70];
 const BAR_OFFSETS = [-10, -22];
 const DIM_ALPHA = 0.55;
+const END_LABEL_OFFSET = 64;
 
 /** Number line along the bottom of the screen: labeled tens, animated markers, and a hopping frog. */
 export class NumberLine extends Phaser.GameObjects.Container {
@@ -35,7 +38,7 @@ export class NumberLine extends Phaser.GameObjects.Container {
 
   constructor(scene: Phaser.Scene, options: NumberLineOptions) {
     super(scene, 0, 0);
-    this.opts = { tickEvery: 1, labelAllUpTo: 20, ...options };
+    this.opts = { tickEvery: 1, labelAllUpTo: 20, endLabels: ['', ''], ...options };
     this.max = options.max;
     this.markerLayer = scene.add.container(0, 0);
     this.drawLine();
@@ -53,7 +56,7 @@ export class NumberLine extends Phaser.GameObjects.Container {
   }
 
   private drawLine(): void {
-    const { x0, x1, y, max, tickEvery, labelAllUpTo } = this.opts;
+    const { x0, x1, y, max, tickEvery, labelAllUpTo, endLabels } = this.opts;
     const g = this.scene.add.graphics();
     // A chunky log the line sits on.
     g.fillStyle(0x8d5524, 1).fillRoundedRect(x0 - 34, y - 6, x1 - x0 + 68, 22, 11);
@@ -85,6 +88,13 @@ export class NumberLine extends Phaser.GameObjects.Container {
         this.add(t);
       }
     }
+
+    // End words under 0 and the last number, colored like the LESS / GREATER prompts.
+    const endColors = [colors.lessCss, colors.greaterCss];
+    [x0, x1].forEach((x, i) => {
+      if (!endLabels[i]) return;
+      this.add(this.scene.add.text(x, y + END_LABEL_OFFSET, endLabels[i], textStyle(fontSize.body - 2, endColors[i], stroke.medium)).setOrigin(0.5));
+    });
   }
 
   /** Put a marker (pin + colored bar from 0) on `value`. Row 0 sits low, row 1 high, so close numbers never overlap. */
