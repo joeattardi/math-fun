@@ -6,6 +6,8 @@ export interface VoiceStyle {
   rate: number;
   /** Prefer an accent if the device has one (e.g. 'en-GB'). */
   lang?: string;
+  /** Voice names to try first, in order (e.g. ['Moira', 'Karen']). Falls back to the usual pick. */
+  prefer?: readonly string[];
 }
 
 export const DEFAULT_VOICE: VoiceStyle = { pitch: 1.1, rate: 1 };
@@ -65,8 +67,12 @@ class Speech {
     }
   }
 
-  private pickVoice(lang?: string): SpeechSynthesisVoice | undefined {
+  private pickVoice(lang?: string, prefer: readonly string[] = []): SpeechSynthesisVoice | undefined {
     const english = this.voices.filter((v) => v.lang?.toLowerCase().startsWith('en'));
+    for (const name of prefer) {
+      const v = english.find((voice) => voice.name.includes(name));
+      if (v) return v;
+    }
     if (lang) {
       const accent = english.filter((v) => v.lang.replace('_', '-').toLowerCase() === lang.toLowerCase());
       const named = accent.find((v) => PREFERRED_NAMES.some((n) => v.name.includes(n)));
@@ -153,7 +159,7 @@ class Speech {
       const u = new SpeechSynthesisUtterance(speakable(item.text));
       u.pitch = item.voice.pitch;
       u.rate = item.voice.rate;
-      const v = this.pickVoice(item.voice.lang);
+      const v = this.pickVoice(item.voice.lang, item.voice.prefer);
       if (v) {
         u.voice = v;
         u.lang = v.lang;
