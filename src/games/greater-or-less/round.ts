@@ -61,3 +61,8 @@ export function summarySentences(pair: Pair): [string, string] {
   const l = lessOf(pair);
   return [`${g} is greater than ${l}!`, `${l} is less than ${g}!`];
 }
+
+/** The spoken tail of every question, e.g. "28 or 51?" (left card, then right card). */
+export function askNumbers(a: number, b: number): string {
+  return `${a} or ${b}?`;
+}

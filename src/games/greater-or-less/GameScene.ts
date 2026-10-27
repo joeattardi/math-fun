@@ -37,7 +37,7 @@ import {
   LEVELS, type LevelDef, type Pair, ROUNDS_PER_LEVEL, generatePair, greaterOf, lessOf,
 } from './questions';
 import {
-  type Ask, type RoundState, answer, createRound, currentAsk, markHint, summarySentences, targetFor, wasFirstTry,
+  type Ask, type RoundState, answer, askNumbers, createRound, currentAsk, markHint, summarySentences, targetFor, wasFirstTry,
 } from './round';
 import { starsFor } from './stars';
 import { uiText } from './ui-text';
@@ -234,7 +234,10 @@ export class GameScene extends Phaser.Scene {
     if (!ask) return;
     const term = this.termOf(ask);
     const other = this.termOf(ask === 'greater' ? 'less' : 'greater');
-    const text = this.pickLine(this.asker, kind === 'first' ? 'ask' : 'askSecond', { term, other });
+    const line = this.pickLine(this.asker, kind === 'first' ? 'ask' : 'askSecond', { term, other });
+    // Read both numbers aloud, left card first, so he hears them as well as sees them.
+    const { a, b } = this.round!.pair;
+    const text = `${line} ${askNumbers(a, b)}`;
     const color = ask === 'greater' ? colors.greaterCss : colors.lessCss;
     this.accepting = true;
     this.showMe.setEnabled(true);
