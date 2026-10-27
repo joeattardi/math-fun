@@ -56,13 +56,18 @@ export function wasFirstTry(state: RoundState): boolean {
   return state.misses[0] === 0 && state.misses[1] === 0;
 }
 
-export function summarySentences(pair: Pair): [string, string] {
+/** The answer review, in the order the round asked: e.g. less first gives "28 is less than 51!" then "51 is greater than 28!". */
+export function summarySentences(pair: Pair, order: readonly [Ask, Ask] = ['greater', 'less']): [string, string] {
   const g = greaterOf(pair);
   const l = lessOf(pair);
-  return [`${g} is greater than ${l}!`, `${l} is less than ${g}!`];
+  const sentence = (ask: Ask) => (ask === 'greater' ? `${g} is greater than ${l}!` : `${l} is less than ${g}!`);
+  return [sentence(order[0]), sentence(order[1])];
 }
 
-/** The whole spoken question, nothing more: "Which number is greater? 28 or 51?" (left card, then right card). */
-export function questionText(ask: Ask, a: number, b: number): string {
-  return `Which number is ${ask}? ${a} or ${b}?`;
+/**
+ * The whole spoken question, nothing more, in two parts spoken with a pause between:
+ * "Which number is greater?" then "28 or 51?" (left card, then right card).
+ */
+export function questionParts(ask: Ask, a: number, b: number): [string, string] {
+  return [`Which number is ${ask}?`, `${a} or ${b}?`];
 }

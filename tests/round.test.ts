@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { seededRng } from '../src/shared/random';
-import { answer, createRound, currentAsk, questionText, summarySentences, targetFor, wasFirstTry } from '../src/games/greater-or-less/round';
+import { answer, createRound, currentAsk, questionParts, summarySentences, targetFor, wasFirstTry } from '../src/games/greater-or-less/round';
 
 const pair = { a: 28, b: 51, type: 'trap' as const };
 
@@ -39,10 +39,11 @@ describe('round', () => {
 
   it('says the full sentences', () => {
     expect(summarySentences(pair)).toEqual(['51 is greater than 28!', '28 is less than 51!']);
+    expect(summarySentences(pair, ['less', 'greater'])).toEqual(['28 is less than 51!', '51 is greater than 28!']);
   });
 
-  it('asks only the plain question, with both numbers in card order', () => {
-    expect(questionText('greater', 28, 51)).toBe('Which number is greater? 28 or 51?');
-    expect(questionText('less', 51, 28)).toBe('Which number is less? 51 or 28?');
+  it('asks only the plain question, then both numbers in card order', () => {
+    expect(questionParts('greater', 28, 51)).toEqual(['Which number is greater?', '28 or 51?']);
+    expect(questionParts('less', 51, 28)).toEqual(['Which number is less?', '51 or 28?']);
   });
 });

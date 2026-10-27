@@ -16,6 +16,8 @@ interface QueueItem {
   text: string;
   voice: VoiceStyle;
   resolve: () => void;
+  /** Silence after this line before the next queued line starts, in ms. */
+  pauseAfter: number;
 }
 
 /** Global speed factor for automated tests (shortens watchdogs). */
@@ -81,10 +83,10 @@ class Speech {
    * Speak a line. Resolves when finished, when interrupted, or when the watchdog fires,
    * so callers can await it without ever blocking gameplay.
    */
-  say(text: string, voice: VoiceStyle = DEFAULT_VOICE, opts: { interrupt?: boolean } = {}): Promise<void> {
+  say(text: string, voice: VoiceStyle = DEFAULT_VOICE, opts: { interrupt?: boolean; pauseAfter?: number } = {}): Promise<void> {
     if (opts.interrupt) this.cancel();
     return new Promise((resolve) => {
-      this.queue.push({ text, voice, resolve });
+      this.queue.push({ text, voice, resolve, pauseAfter: opts.pauseAfter ?? 0 });
       if (!this.current) this.next();
     });
   }
@@ -129,7 +131,12 @@ class Speech {
       finished = true;
       this.clearWatchdog();
       item.resolve();
-      this.next();
+      if (item.pauseAfter > 0) {
+        // Hold the queue for a beat; a cancel() in the meantime bumps the generation and wins.
+        setTimeout(() => gen === this.generation && this.next(), item.pauseAfter / speedFactor);
+      } else {
+        this.next();
+      }
     };
 
     // Rough duration estimate, so a stuck engine can't hold up the game.

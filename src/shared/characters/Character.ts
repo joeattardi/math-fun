@@ -4,6 +4,9 @@ import { type VoiceStyle, speech } from '../audio/speech';
 import { colors, fontSize, textStyle, timing } from '../theme';
 import type { SpeechBubble } from '../ui/SpeechBubble';
 
+/** Silence between the parts of a multi-part line, e.g. a question and its two numbers. */
+const PAUSE_BETWEEN_PARTS = 400;
+
 export type Reaction = 'happy' | 'confused' | 'dance' | 'cheer' | 'wave';
 
 /**
@@ -66,14 +69,24 @@ export abstract class Character extends Phaser.GameObjects.Container {
 
   /**
    * Speak a line with a bubble. `display` is shorter text for the bubble when it differs.
+   * Pass several parts to speak them with a short pause between each.
    * Resolves when speech ends (or its watchdog fires); speech failures never block.
    */
-  async say(bubble: SpeechBubble, text: string, opts: { display?: string; interrupt?: boolean; prompt?: { text: string; color?: string }[] } = {}): Promise<void> {
+  async say(bubble: SpeechBubble, spoken: string | readonly string[], opts: { display?: string; interrupt?: boolean; prompt?: { text: string; color?: string }[] } = {}): Promise<void> {
+    const parts = typeof spoken === 'string' ? [spoken] : spoken;
+    const text = parts.join(' ');
     if (opts.prompt) bubble.showPrompt(opts.prompt, this.x, this.y + this.headY);
     else bubble.show(opts.display ?? text, this.x, this.y + this.headY);
     this.startTalking();
     const started = this.scene.time.now;
-    await speech.say(text, this.voice, { interrupt: opts.interrupt ?? true });
+    await Promise.all(
+      parts.map((part, i) =>
+        speech.say(part, this.voice, {
+          interrupt: i === 0 && (opts.interrupt ?? true),
+          pauseAfter: i < parts.length - 1 ? PAUSE_BETWEEN_PARTS : 0,
+        }),
+      ),
+    );
     this.stopTalking();
     // Give early readers a moment with the bubble even if speech was fast or absent.
     const elapsed = this.scene.time.now - started;

@@ -37,7 +37,7 @@ import {
   LEVELS, type LevelDef, type Pair, ROUNDS_PER_LEVEL, generatePair, greaterOf, lessOf,
 } from './questions';
 import {
-  type Ask, type RoundState, answer, createRound, currentAsk, markHint, questionText, summarySentences, targetFor, wasFirstTry,
+  type Ask, type RoundState, answer, createRound, currentAsk, markHint, questionParts, summarySentences, targetFor, wasFirstTry,
 } from './round';
 import { starsFor } from './stars';
 import { uiText } from './ui-text';
@@ -237,7 +237,8 @@ export class GameScene extends Phaser.Scene {
     const color = ask === 'greater' ? colors.greaterCss : colors.lessCss;
     this.accepting = true;
     this.showMe.setEnabled(true);
-    void this.asker.say(this.bubble, questionText(ask, a, b), {
+    // Questions always come from Professor Waddles' voice, so the prompt sounds the same every time.
+    void this.waddles.say(this.bubble, questionParts(ask, a, b), {
       prompt: [{ text: uiText.askPrefix }, { text: this.termOf(ask), color }, { text: '?' }],
     });
   }
@@ -371,8 +372,9 @@ export class GameScene extends Phaser.Scene {
     if (!firstTry) {
       await this.live(this.asker.say(this.bubble, this.picker.pick('recovery', recoveryPraise)));
     }
-    const [s1, s2] = summarySentences(pair);
-    await this.live(this.waddles.say(this.bubble, `${s1} ${s2}`, { display: `${s1}\n${s2}` }));
+    // Spoken as two parts, with a pause between them.
+    const [s1, s2] = summarySentences(pair, round.order);
+    await this.live(this.waddles.say(this.bubble, [s1, s2], { display: `${s1}\n${s2}` }));
 
     if (isRecord && !this.recordAnnounced) {
       this.recordAnnounced = true;
