@@ -1,11 +1,12 @@
 import Phaser from 'phaser';
+import { createLevelCompleteScene } from '../../shared/levels/LevelCompleteScene';
+import { createLevelSelectScene } from '../../shared/levels/LevelSelectScene';
 import { progress } from '../../shared/progress';
 import { colors } from '../../shared/theme';
 import type { GameDefinition } from '../types';
 import { GAME_ID, SCENES } from './constants';
 import { GameScene } from './GameScene';
-import { LevelCompleteScene } from './LevelCompleteScene';
-import { LevelSelectScene } from './LevelSelectScene';
+import { levelFlow } from './levelFlow';
 import { LEVELS, QUESTION_TYPES } from './questions';
 
 export const greaterOrLess: GameDefinition = {
@@ -13,7 +14,7 @@ export const greaterOrLess: GameDefinition = {
   title: 'Greater or Less?',
   color: colors.green,
   entryScene: SCENES.levelSelect,
-  scenes: [LevelSelectScene, GameScene, LevelCompleteScene],
+  scenes: [createLevelSelectScene(levelFlow), GameScene, createLevelCompleteScene(levelFlow)],
   drawIcon: (g) => {
     const card = (x: number, y: number, angle: number, color: number) => {
       const c = Math.cos(angle);

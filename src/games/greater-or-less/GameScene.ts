@@ -11,7 +11,9 @@ import { FAST_FACTOR, debug, exposeDebug } from '../../shared/debug';
 import { LinePicker } from '../../shared/praise';
 import { progress } from '../../shared/progress';
 import { type Rng, seededRng } from '../../shared/random';
-import { STICKERS, milestonesCrossed, nextSticker } from '../../shared/stickers';
+import { completeLevel } from '../../shared/levels/rewards';
+import { starsFor } from '../../shared/stars';
+import { STICKERS } from '../../shared/stickers';
 import { CENTER_X, colors, fontSize, layout, textStyle } from '../../shared/theme';
 import { Button } from '../../shared/ui/Button';
 import { ComboMeter } from '../../shared/ui/ComboMeter';
@@ -25,7 +27,6 @@ import { addHomeButton, setupScene } from '../../shell/sceneKit';
 import { goTo } from '../../shell/transitions';
 import { pickType } from './adaptivity';
 import { GAME_ID, SCENES } from './constants';
-import type { LevelCompleteData } from './LevelCompleteScene';
 import { chompLines } from './lines/chomp';
 import { hopsLines } from './lines/hops';
 import {
@@ -39,7 +40,6 @@ import {
 import {
   type Ask, type RoundState, answer, createRound, currentAsk, markHint, questionParts, summarySentences, targetFor, wasFirstTry,
 } from './round';
-import { starsFor } from './stars';
 import { uiText } from './ui-text';
 
 export interface GameSceneData {
@@ -455,36 +455,16 @@ export class GameScene extends Phaser.Scene {
     this.accepting = false;
     this.showMe.setEnabled(false);
     music.setHype(0);
-    const stars = starsFor(this.firstTryCount, ROUNDS_PER_LEVEL);
-    const result = progress.completeLevel(GAME_ID, this.level.index, stars, this.firstTryCount, LEVELS.length);
-
-    // One sticker per level, plus bonus stickers for rounds-played milestones. Full book means trophies.
-    const roundsNow = progress.game(GAME_ID).roundsPlayed;
-    const awards = 1 + milestonesCrossed(this.roundsPlayedAtStart, roundsNow);
-    const stickers: string[] = [];
-    let trophies = 0;
-    for (let i = 0; i < awards; i++) {
-      const s = nextSticker(progress.snapshot().stickers);
-      if (s) {
-        progress.addSticker(s.id);
-        stickers.push(s.id);
-      } else {
-        progress.addTrophy();
-        trophies++;
-      }
-    }
-
-    const data: LevelCompleteData = {
+    const data = completeLevel({
+      gameId: GAME_ID,
       levelIndex: this.level.index,
-      stars,
-      newBestStars: result.newBestStars,
-      newBestScore: result.newBestScore,
-      unlockedNext: result.unlockedNext,
+      levelCount: LEVELS.length,
+      stars: starsFor(this.firstTryCount, ROUNDS_PER_LEVEL),
+      score: this.firstTryCount,
+      roundsPlayedAtStart: this.roundsPlayedAtStart,
       newRecordStreak: this.newRecordStreak,
       bestStreak: this.levelBestStreak,
-      stickers,
-      trophies,
-    };
+    });
     await this.live(wait(this, 400));
     goTo(this, SCENES.levelComplete, data, { x: CENTER_X, y: layout.cards.y });
   }

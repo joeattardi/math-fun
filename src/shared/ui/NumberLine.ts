@@ -15,6 +15,8 @@ export interface NumberLineOptions {
   labelAllUpTo?: number;
   /** Words under the two ends of the line, e.g. ['LEFT', 'RIGHT']. */
   endLabels?: [string, string];
+  /** Labeled, tall ticks every this many. Defaults to 10. */
+  majorEvery?: number;
 }
 
 interface Marker {
@@ -23,7 +25,8 @@ interface Marker {
   bar: Phaser.GameObjects.Graphics;
 }
 
-const MARKER_HEIGHTS = [38, 70];
+const MARKER_BASE_HEIGHT = 38;
+const MARKER_ROW_STEP = 32;
 const BAR_OFFSETS = [-10, -22];
 const DIM_ALPHA = 0.55;
 const END_LABEL_OFFSET = 64;
@@ -38,7 +41,7 @@ export class NumberLine extends Phaser.GameObjects.Container {
 
   constructor(scene: Phaser.Scene, options: NumberLineOptions) {
     super(scene, 0, 0);
-    this.opts = { tickEvery: 1, labelAllUpTo: 20, endLabels: ['', ''], ...options };
+    this.opts = { tickEvery: 1, labelAllUpTo: 20, endLabels: ['', ''], majorEvery: 10, ...options };
     this.max = options.max;
     this.markerLayer = scene.add.container(0, 0);
     this.drawLine();
@@ -56,7 +59,7 @@ export class NumberLine extends Phaser.GameObjects.Container {
   }
 
   private drawLine(): void {
-    const { x0, x1, y, max, tickEvery, labelAllUpTo, endLabels } = this.opts;
+    const { x0, x1, y, max, tickEvery, labelAllUpTo, endLabels, majorEvery } = this.opts;
     const g = this.scene.add.graphics();
     // A chunky log the line sits on.
     g.fillStyle(0x8d5524, 1).fillRoundedRect(x0 - 34, y - 6, x1 - x0 + 68, 22, 11);
@@ -70,7 +73,7 @@ export class NumberLine extends Phaser.GameObjects.Container {
     const labelAll = max <= labelAllUpTo;
     for (let n = 0; n <= max; n += tickEvery) {
       const x = this.xFor(n);
-      const isTen = n % 10 === 0;
+      const isTen = n % majorEvery === 0;
       const h = isTen ? 22 : max > 50 ? 8 : 12;
       g.lineStyle(isTen ? 5 : 3, colors.ink, 1).lineBetween(x, y - h, x, y + h * 0.5);
       if (isTen || labelAll) {
@@ -97,16 +100,21 @@ export class NumberLine extends Phaser.GameObjects.Container {
     });
   }
 
-  /** Put a marker (pin + colored bar from 0) on `value`. Row 0 sits low, row 1 high, so close numbers never overlap. */
-  placeMarker(value: number, color: number, row: 0 | 1, instant = false): Phaser.GameObjects.Container {
+  /**
+   * Put a marker (pin + colored bar from 0) on `value`. Higher rows sit higher, so close numbers never overlap.
+   * Bars only fit under rows 0 and 1; pass `bar: false` for pins alone.
+   */
+  placeMarker(value: number, color: number, row: number, instant = false, opts: { bar?: boolean } = {}): Phaser.GameObjects.Container {
     const x = this.xFor(value);
     const y = this.opts.y;
-    const height = MARKER_HEIGHTS[row];
+    const height = MARKER_BASE_HEIGHT + row * MARKER_ROW_STEP;
 
     const bar = this.scene.add.graphics();
-    bar.fillStyle(color, 0.95).fillRoundedRect(0, -6, Math.max(12, x - this.xFor(0)), 12, 6);
-    bar.lineStyle(3, colors.ink, 1).strokeRoundedRect(0, -6, Math.max(12, x - this.xFor(0)), 12, 6);
-    bar.setPosition(this.xFor(0), y + BAR_OFFSETS[row]);
+    if (opts.bar !== false && row < BAR_OFFSETS.length) {
+      bar.fillStyle(color, 0.95).fillRoundedRect(0, -6, Math.max(12, x - this.xFor(0)), 12, 6);
+      bar.lineStyle(3, colors.ink, 1).strokeRoundedRect(0, -6, Math.max(12, x - this.xFor(0)), 12, 6);
+      bar.setPosition(this.xFor(0), y + BAR_OFFSETS[row]);
+    }
 
     const c = this.scene.add.container(x, y);
     const stick = this.scene.add.graphics();

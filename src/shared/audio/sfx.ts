@@ -181,6 +181,47 @@ export const sfx = {
     blip(c, { from: 300, to: 1600, dur: 0.35, vol: 0.12 });
     hiss(c, { dur: 0.7, freq: 2500, filter: 'lowpass', q: 0.4, vol: 0.45, delay: 0.32 });
   },
+  /** Party horn blast: a buzzy rising toot with a wobble. */
+  partyHorn(): void {
+    const c = enabled();
+    if (!c) return;
+    blip(c, { type: 'sawtooth', from: 330, to: 660, dur: 0.12, vol: 0.18 });
+    blip(c, { type: 'sawtooth', from: 660, dur: 0.45, vol: 0.2, delay: 0.12, vibrato: [18, 11] });
+    hiss(c, { dur: 0.3, freq: 3000, q: 0.6, vol: 0.12, delay: 0.1 });
+  },
+  /** Silly clown-nose honk-honk. */
+  honk(): void {
+    const c = enabled();
+    if (!c) return;
+    [0, 0.2].forEach((delay) => {
+      blip(c, { type: 'square', from: 420, to: 360, dur: 0.14, vol: 0.16, delay });
+      blip(c, { type: 'square', from: 630, to: 540, dur: 0.14, vol: 0.08, delay });
+    });
+  },
+  /** Kazoo "ta-da!" in three notes. */
+  kazoo(): void {
+    const c = enabled();
+    if (!c) return;
+    [[392, 0, 0.14], [523, 0.15, 0.14], [659, 0.3, 0.45]].forEach(([f, delay, dur]) => {
+      blip(c, { type: 'sawtooth', from: f, dur, vol: 0.13, delay, vibrato: [9, 7] });
+      hiss(c, { dur, freq: f * 3, q: 3, vol: 0.06, delay });
+    });
+  },
+  /** Bouncy spring: boing-boing-boing, each higher. */
+  boingBoing(): void {
+    const c = enabled();
+    if (!c) return;
+    [0, 0.16, 0.32].forEach((delay, i) => {
+      blip(c, { type: 'triangle', from: 160 + i * 80, to: 520 + i * 160, dur: 0.22, vol: 0.4, delay, vibrato: [30, 20] });
+    });
+  },
+  /** Cartoon "wheee!" whistle swooping up and down. */
+  whee(): void {
+    const c = enabled();
+    if (!c) return;
+    blip(c, { from: 600, to: 1800, dur: 0.35, vol: 0.25, attack: 0.03 });
+    blip(c, { from: 1800, to: 900, dur: 0.35, vol: 0.22, delay: 0.33, vibrato: [20, 9] });
+  },
   splash(): void {
     const c = enabled();
     if (!c) return;
@@ -189,3 +230,15 @@ export const sfx = {
 };
 
 export type SfxName = keyof typeof sfx;
+
+/** Celebration noises, picked at random so correct answers stay surprising. */
+const FUNNY: readonly SfxName[] = ['partyHorn', 'honk', 'kazoo', 'boingBoing', 'whee'];
+let lastFunny: SfxName | null = null;
+
+/** Play a random funny celebration sound, never the same one twice in a row. */
+export function funnySound(rng: () => number = Math.random): void {
+  const options = FUNNY.filter((n) => n !== lastFunny);
+  const name = options[Math.floor(rng() * options.length)];
+  lastFunny = name;
+  sfx[name]();
+}

@@ -23,6 +23,8 @@ export interface GameProgress {
   bestStreak: number;
   roundsPlayed: number;
   levelsCompleted: number;
+  /** The game's teach flow has played through once. */
+  teachSeen: boolean;
 }
 
 export interface Settings {
@@ -56,7 +58,7 @@ export function defaultProgress(): ProgressData {
 }
 
 function defaultGame(): GameProgress {
-  return { unlockedLevel: 0, bestStars: [], bestScore: [], stats: {}, bestStreak: 0, roundsPlayed: 0, levelsCompleted: 0 };
+  return { unlockedLevel: 0, bestStars: [], bestScore: [], stats: {}, bestStreak: 0, roundsPlayed: 0, levelsCompleted: 0, teachSeen: false };
 }
 
 /** Bring any stored shape up to the current schema. Unknown or broken data resets to defaults. */
@@ -145,13 +147,29 @@ export class ProgressStore {
 
   /** Record one round. Returns the new rounds-played total. */
   recordRound(gameId: string, skill: string, firstTry: boolean): number {
-    const g = this.mutableGame(gameId);
-    const s = (g.stats[skill] ??= { seen: 0, firstTry: 0 });
+    this.recordSkill(gameId, skill, firstTry);
+    return this.countRound(gameId);
+  }
+
+  /** Accuracy for one skill, without counting a round (games that check several skills per round). */
+  recordSkill(gameId: string, skill: string, firstTry: boolean): void {
+    const s = (this.mutableGame(gameId).stats[skill] ??= { seen: 0, firstTry: 0 });
     s.seen++;
     if (firstTry) s.firstTry++;
+    this.save();
+  }
+
+  /** Count a finished round. Returns the new rounds-played total. */
+  countRound(gameId: string): number {
+    const g = this.mutableGame(gameId);
     g.roundsPlayed++;
     this.save();
     return g.roundsPlayed;
+  }
+
+  markTeachSeen(gameId: string): void {
+    this.mutableGame(gameId).teachSeen = true;
+    this.save();
   }
 
   /** Returns true when this streak is a new personal best. */
