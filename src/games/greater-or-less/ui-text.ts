@@ -5,13 +5,6 @@ export const uiText = {
   lineLeft: 'LEFT',
   lineRight: 'RIGHT',
   askPrefix: 'Which number is ',
-  levelLabel: (n: number) => `Level ${n}`,
   roundLabel: (n: number, total: number) => `${n} / ${total}`,
-  levelDone: 'Level Complete!',
-  newSticker: 'New sticker!',
-  trophy: 'Bonus trophy!',
-  again: 'Play again',
-  next: 'Next level',
   menu: 'Menu',
-  chooseLevel: 'Pick a level!',
 } as const;

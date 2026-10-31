@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { starsFor } from '../src/games/greater-or-less/stars';
+import { starsFor } from '../src/shared/stars';
 import { STICKERS, milestonesCrossed, nextSticker } from '../src/shared/stickers';
 
 describe('stars', () => {

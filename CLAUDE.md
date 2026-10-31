@@ -10,7 +10,7 @@ Each game targets one specific math skill the child is struggling with. Fun is t
 - **Never punish.** No lives, no timers, no game-over, no harsh "wrong" buzzers. A wrong answer triggers a funny reaction and a visual hint, then a retry.
 - **Praise often and specifically.** "You checked the tens first, genius!" beats "Good job." Vary praise so it doesn't get stale.
 - **Humor is a feature.** Characters say silly things, make goofy faces, and occasionally break the fourth wall. Keep jokes kid-appropriate and kind (never mocking the player).
-- **Use correct math vocabulary.** Say what his teacher says: "greater than," "less than," "equal to," and so on. For comparing numbers, never use "bigger," "smaller," or "larger" in prompts, hints, or praise. Each game's spec lists its required terms.
+- **Use correct math vocabulary.** Say what his teacher says: "greater than," "less than," "equal to," and so on. For comparing numbers, never use "bigger," "smaller," or "larger" in prompts, hints, or praise. Each game's spec lists its required terms. Ordering Numbers uses "greatest," "least," "greater than," and "hundreds / tens / ones place."
 - **On a number line, describe position with "left" and "right"** (numbers to the right are greater, numbers to the left are less), not "farther along" or "how far."
 - **Visual scaffolding over explanation.** Show the concept (number line, tens groups, hops) rather than telling.
 - **Short sessions.** A round is a few seconds; a "level" is ~10 rounds. Celebrate at the end of each level.
@@ -68,6 +68,7 @@ src/
     ui/                # big touch buttons, speech bubbles, confetti, star bursts
     progress.ts        # per-game, per-skill stats in localStorage (versioned schema)
     praise.ts          # shared praise/encouragement line picker (no immediate repeats)
+    levels/            # shared level select + level complete scenes and rewards (games pass a LevelFlowConfig)
   games/
     registry.ts        # list of games shown in the menu
     <game-id>/         # one folder per game, self-contained
@@ -92,6 +93,7 @@ public/                # PWA icons, etc.
   - Design the game at a **1133×744 logical resolution** and scale with Phaser's `Scale.FIT` (and `autoCenter`), so it fills the iPad mini exactly. Other iPads letterbox slightly, which is fine.
   - The screen is physically small, so size for small hands on a small display: tap targets at least **72×72 CSS px** for gameplay (64 minimum for chrome), number cards around 250 px, main numbers at least 140 px tall, and body text at least 22 px.
   - Keep the layout uncluttered: no more than two answer targets plus one helper button on screen at once, with the number line always fully visible along the bottom.
+    - **Exception: Ordering Numbers** shows four number cards at once (about 212×142 px, digits about 100 px tall), because ordering needs all four. Its arrange-mode level also shows a second button (Check). Keep other games to the two-target rule.
   - When running as a Home Screen app, the full 744 px height is available. In Safari's browser view it's shorter, so `Scale.FIT` should handle that without clipping anything important.
 - **Landscape layout** is the target; handle portrait gracefully with a "turn me sideways" screen.
 - Respect safe-area insets; disable pinch-zoom, double-tap zoom, text selection, and pull-to-refresh in-game.

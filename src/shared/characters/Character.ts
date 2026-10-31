@@ -75,8 +75,9 @@ export abstract class Character extends Phaser.GameObjects.Container {
   async say(bubble: SpeechBubble, spoken: string | readonly string[], opts: { display?: string; interrupt?: boolean; prompt?: { text: string; color?: string }[] } = {}): Promise<void> {
     const parts = typeof spoken === 'string' ? [spoken] : spoken;
     const text = parts.join(' ');
-    if (opts.prompt) bubble.showPrompt(opts.prompt, this.x, this.y + this.headY);
-    else bubble.show(opts.display ?? text, this.x, this.y + this.headY);
+    const headY = this.y + this.headY * this.scaleY;
+    if (opts.prompt) bubble.showPrompt(opts.prompt, this.x, headY);
+    else bubble.show(opts.display ?? text, this.x, headY);
     this.startTalking();
     const started = this.scene.time.now;
     await Promise.all(

@@ -35,6 +35,12 @@ export const colors = {
   tensCss: '#ffd60a',
   /** Card colors, left then right. */
   cards: [0xff9f1c, 0x9b5de5] as const,
+  /** Place value colors, used everywhere a digit's place matters: hundreds, tens, ones. */
+  places: { hundreds: 0xc77dff, tens: 0xff9f1c, ones: 0x3a86ff },
+  placesCss: { hundreds: '#c77dff', tens: '#ff9f1c', ones: '#3a86ff' },
+  cardFace: 0xfff8e1,
+  /** Rim colors for four-card games, one per card. */
+  cardRims: [0xff5d8f, 0x06d6a0, 0xffd60a, 0x4cc9f0] as const,
   confetti: [0xff5d8f, 0xffd60a, 0x06d6a0, 0x3a86ff, 0x9b5de5, 0xff9f1c, 0xffffff],
 };
 
@@ -49,6 +55,10 @@ export const fontSize = {
   small: 22,
   numberLineLabel: 24,
   numberLineLabelMinor: 20,
+  /** Digits on a four-card place value card (narrower cards than the two-card games). */
+  placeDigit: 100,
+  placeGridDigit: 70,
+  placeLetter: 20,
 };
 
 export const stroke = {
@@ -76,6 +86,20 @@ export const layout = {
   numberLine: { x0: 92, x1: 1041, y: 648 },
   comboMeter: { x: 980, y: 40, width: 210, height: 40 },
   progressDots: { y: 40, spacing: 30, radius: 10 },
+  /** Four-card ordering games: a tray of cards above a row of answer slots. */
+  ordering: {
+    card: { width: 212, height: 142, gap: 24 },
+    trayY: 264,
+    slotsY: 424,
+    arrowY: 516,
+    chomp: { x: 118, y: 196, scale: 0.55 },
+    waddles: { x: 1036, y: 196, scale: 0.55 },
+    numberLine: { x0: 92, x1: 850, y: 648 },
+    helper: { x: 1010, y: 660, width: 200, height: 80 },
+    /** Arrange mode puts Line up! above Check!. */
+    helperHigh: { x: 1010, y: 578, width: 200, height: 68 },
+    grid: { y: 370, rowHeight: 78, colWidth: 104, headerHeight: 48 },
+  },
 };
 
 export const timing = {

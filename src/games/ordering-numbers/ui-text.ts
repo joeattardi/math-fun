@@ -1,0 +1,33 @@
+/** Short on-screen strings for Ordering Numbers. Kept here so the vocabulary test covers them. */
+export const uiText = {
+  title: 'Ordering Numbers',
+  greatest: 'GREATEST',
+  least: 'LEAST',
+  lineUp: 'Line up!',
+  check: 'Check!',
+  learn: 'Learn it!',
+  skip: 'Skip',
+  nextStep: 'Next',
+  again: 'Again',
+  done: 'Let\'s play!',
+  placeLetters: ['H', 'T', 'O'] as const,
+  placeNames: ['hundreds', 'tens', 'ones'] as const,
+  /** Bubble prompts, with the highlighted word split out. */
+  askFirst: { before: 'Which is the ', word: 'GREATEST', after: '?' },
+  askNext: { before: 'Next ', word: 'GREATEST', after: '?' },
+  askLast: { before: 'Last one: ', word: 'LEAST', after: '!' },
+  askArrange: { before: '', word: 'GREATEST', after: ' to least!' },
+  askCheck: 'All full! Tap Check!',
+  /** Spoken versions. */
+  sayFirst: ['Put them in order, from greatest to least!', 'Which number is the greatest?'],
+  sayNext: 'Which is the greatest number left?',
+  sayLast: 'The last one is the least! Tap it!',
+  sayArrange: ['Put them in order, from greatest to least!', 'Then tap Check!'],
+  sayCheck: 'All full! Tap Check when you are ready!',
+  lineUpZeros: 'Empty places mean zero!',
+  lineUpHundreds: 'Look at the hundreds first! Then the tens, then the ones.',
+  lineUpHundredsShort: 'Hundreds first!',
+  cheerWords: ['YES!', 'WOW!', 'BOOM!', 'SUPER!', 'NICE!', 'YAY!', 'ZING!', 'KAPOW!', 'WHOA!', 'GENIUS!'],
+  lineLeft: 'LEFT',
+  lineRight: 'RIGHT',
+} as const;
